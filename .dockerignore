@@ -1,0 +1,16 @@
+﻿# versioning and metadata
+.git
+.gitignore
+.dockerignore
+
+# builf dependencies
+dist.do
+node_modules
+
+# environtment (contains sensitive data)
+*.env
+
+# misc
+.eslintrc.js
+.prettierrc
+README.MD

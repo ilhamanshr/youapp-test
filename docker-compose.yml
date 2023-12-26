@@ -1,0 +1,64 @@
+﻿version: '3'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - '5672:5672'
+  auth:
+    build: 
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+    command: npm run start:dev auth
+    env_file:
+      - ./apps/auth/.env
+    depends_on:
+      - mongodb
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+  users:
+    build: 
+      context: .
+      dockerfile: ./apps/users/Dockerfile
+    command: npm run start:dev users
+    env_file:
+      - ./apps/users/.env
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - auth
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3001:3001'
+  chats:
+    build: 
+      context: .
+      dockerfile: ./apps/chats/Dockerfile
+    command: npm run start:dev chats
+    env_file:
+      - ./apps/chats/.env
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - auth
+      - users
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3002:3002'
+
+volumes:
+  mongodb_data:
